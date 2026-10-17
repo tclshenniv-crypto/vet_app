@@ -46,6 +46,47 @@ if (!function_exists('getMascotaBadgeInfo')) {
         }
     }
 }
+
+// Función auxiliar global para cálculo de edad de pacientes
+if (!function_exists('calcularEdadMascota')) {
+    function calcularEdadMascota($fecha_nacimiento) {
+        if (empty($fecha_nacimiento)) {
+            return ['corta' => 'Sin registrar', 'completa' => 'Sin fecha de nacimiento registrada'];
+        }
+        try {
+            $nacimiento = new DateTime($fecha_nacimiento);
+            $hoy = new DateTime();
+            if ($nacimiento > $hoy) {
+                return ['corta' => 'Fecha futura', 'completa' => 'La fecha de nacimiento es futura'];
+            }
+            $diff = $hoy->diff($nacimiento);
+            $anios = $diff->y;
+            $meses = $diff->m;
+            $dias  = $diff->d;
+
+            if ($anios === 0) {
+                if ($meses === 0) {
+                    $corta = $dias . ($dias === 1 ? ' día' : ' días');
+                    $completa = $corta;
+                } else {
+                    $corta = $meses . ($meses === 1 ? ' mes' : ' meses');
+                    $completa = $meses . ($meses === 1 ? ' mes' : ' meses') . ($dias > 0 ? " y $dias " . ($dias === 1 ? 'día' : 'días') : '');
+                }
+            } else {
+                if ($meses === 0) {
+                    $corta = $anios . ($anios === 1 ? ' año' : ' años');
+                    $completa = $corta;
+                } else {
+                    $corta = $anios . ($anios === 1 ? ' año, ' : ' años, ') . $meses . ($meses === 1 ? ' mes' : ' meses');
+                    $completa = $anios . ($anios === 1 ? ' año' : ' años') . " y $meses " . ($meses === 1 ? 'mes' : 'meses') . ($dias > 0 ? " y $dias " . ($dias === 1 ? 'día' : 'días') : '');
+                }
+            }
+            return ['corta' => $corta, 'completa' => $completa];
+        } catch (Exception $e) {
+            return ['corta' => 'Sin registrar', 'completa' => 'Fecha inválida'];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es" class="">

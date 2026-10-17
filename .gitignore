@@ -5,6 +5,10 @@ conexion.php
 *.log
 subir_a_github.bat
 
+# Archivos y estudios médicos subidos (privacidad médica)
+uploads/examenes/*
+!uploads/examenes/.gitkeep
+
 # Respaldos de base de datos con información sensible
 *.sql
 *.sqlite

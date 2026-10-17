@@ -312,13 +312,33 @@ $edad_info = calcularEdadMascota($paciente['fecha_nacimiento']);
                             <!-- Resumen visible siempre: Fecha + Peso + Motivo/Síntomas + Botón desplegable -->
                             <summary class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
                                 <div class="space-y-1.5 flex-1">
-                                    <div class="flex items-center gap-2.5 flex-wrap">
+                                    <div class="flex items-center gap-2 flex-wrap">
                                         <span class="bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-100 dark:border-blue-900/40">
                                             📅 <?= date('d/m/Y - H:i', strtotime($con['fecha'])) ?>
                                         </span>
-                                        <?php if ($con['peso_en_consulta']): ?>
+                                        <?php if (!empty($con['peso_en_consulta'])): ?>
                                             <span class="text-xs text-slate-600 dark:text-slate-300 font-semibold bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200/50 dark:border-slate-700">
                                                 ⚖️ <?= $con['peso_en_consulta'] ?> kg
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($con['temperatura'])): ?>
+                                            <span class="text-xs text-amber-700 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-200/50 dark:border-amber-900/40">
+                                                🌡️ <?= $con['temperatura'] ?> °C
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($con['mucosas'])): ?>
+                                            <span class="text-xs text-slate-600 dark:text-slate-300 font-medium bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200/50 dark:border-slate-700">
+                                                👁️ <?= htmlspecialchars($con['mucosas']) ?>
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($con['veterinario'])): ?>
+                                            <span class="text-xs text-indigo-700 dark:text-indigo-400 font-semibold bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-1 rounded-lg border border-indigo-200/50 dark:border-indigo-900/40">
+                                                👨‍⚕️ <?= htmlspecialchars($con['veterinario']) ?>
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($con['archivo_adjunto'])): ?>
+                                            <span class="text-xs text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-lg border border-emerald-200/50 dark:border-emerald-900/40">
+                                                📎 Con estudio adjunto
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -365,6 +385,40 @@ $edad_info = calcularEdadMascota($paciente['fecha_nacimiento']);
                                         <?= !empty($con['tratamiento']) ? nl2br(htmlspecialchars($con['tratamiento'])) : '<span class="text-slate-400 italic text-xs">Sin tratamiento especificado</span>' ?>
                                     </p>
                                 </div>
+
+                                <!-- Examen / Estudio Adjunto si existe -->
+                                <?php if (!empty($con['archivo_adjunto'])): 
+                                    $ext = strtolower(pathinfo($con['archivo_adjunto'], PATHINFO_EXTENSION));
+                                    $es_imagen = in_array($ext, ['jpg', 'jpeg', 'png', 'webp']);
+                                ?>
+                                    <div class="col-span-1 md:col-span-2 bg-indigo-50/50 dark:bg-indigo-950/30 p-4 rounded-xl border border-indigo-200/70 dark:border-indigo-900/50 space-y-3">
+                                        <div class="flex items-center justify-between flex-wrap gap-2">
+                                            <div class="flex items-center gap-2.5">
+                                                <span class="text-xl">📎</span>
+                                                <div>
+                                                    <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400 block">
+                                                        <?= htmlspecialchars($con['archivo_tipo'] ?? 'Estudio / Examen Médico') ?>
+                                                    </span>
+                                                    <span class="text-xs text-slate-800 dark:text-slate-100 font-semibold">
+                                                        <?= htmlspecialchars($con['archivo_nombre_original'] ?? 'Archivo adjunto') ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <a href="<?= htmlspecialchars($con['archivo_adjunto']) ?>" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                                <span>Ver / Descargar Documento</span>
+                                            </a>
+                                        </div>
+
+                                        <?php if ($es_imagen): ?>
+                                            <div class="pt-2">
+                                                <a href="<?= htmlspecialchars($con['archivo_adjunto']) ?>" target="_blank" class="inline-block max-w-xs rounded-xl overflow-hidden border border-indigo-200 dark:border-indigo-800 hover:opacity-90 transition-opacity">
+                                                    <img src="<?= htmlspecialchars($con['archivo_adjunto']) ?>" alt="Estudio médico" class="w-full h-36 object-cover object-center bg-slate-900">
+                                                </a>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </details>
                     <?php endforeach; ?>
