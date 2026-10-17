@@ -1,0 +1,22 @@
+# Archivos de configuración sensible y credenciales locales
+conexion.php
+.env
+.env.*
+*.log
+
+# Respaldos de base de datos con información sensible
+*.sql
+*.sqlite
+*.dump
+
+# Carpetas de desarrollo y configuración de agentes / IDE
+.agents/
+.vscode/
+.idea/
+
+# Archivos temporales y del sistema operativo
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
