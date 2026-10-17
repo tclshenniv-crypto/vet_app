@@ -3,6 +3,49 @@
 require_once 'conexion.php';
 $stmt_notif = $pdo->query("SELECT COUNT(*) FROM vacunas_recordatorios WHERE estado = 'Pendiente' AND proxima_dosis <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
 $num_recordatorios = $stmt_notif->fetchColumn();
+
+// Función auxiliar global para iconos y estilos de especies
+if (!function_exists('getMascotaBadgeInfo')) {
+    function getMascotaBadgeInfo($especie) {
+        $esp = mb_strtolower(trim($especie ?? ''));
+        if (strpos($esp, 'perro') !== false || strpos($esp, 'can') !== false || strpos($esp, 'dog') !== false) {
+            return [
+                'emoji'   => '🐶',
+                'label'   => 'Perro',
+                'classes' => 'bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200/90 dark:border-blue-800/70 hover:bg-blue-100 dark:hover:bg-blue-900/60 hover:border-blue-300',
+                'badge'   => 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50'
+            ];
+        } elseif (strpos($esp, 'gato') !== false || strpos($esp, 'fel') !== false || strpos($esp, 'cat') !== false) {
+            return [
+                'emoji'   => '🐱',
+                'label'   => 'Gato',
+                'classes' => 'bg-emerald-50/90 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/90 dark:border-emerald-800/70 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 hover:border-emerald-300',
+                'badge'   => 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50'
+            ];
+        } elseif (strpos($esp, 'ave') !== false || strpos($esp, 'pájaro') !== false || strpos($esp, 'pajaro') !== false || strpos($esp, 'loro') !== false) {
+            return [
+                'emoji'   => '🦜',
+                'label'   => 'Ave',
+                'classes' => 'bg-amber-50/90 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200/90 dark:border-amber-800/70 hover:bg-amber-100 dark:hover:bg-amber-900/60 hover:border-amber-300',
+                'badge'   => 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/50'
+            ];
+        } elseif (strpos($esp, 'conejo') !== false) {
+            return [
+                'emoji'   => '🐰',
+                'label'   => 'Conejo',
+                'classes' => 'bg-pink-50/90 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border-pink-200/90 dark:border-pink-800/70 hover:bg-pink-100 dark:hover:bg-pink-900/60 hover:border-pink-300',
+                'badge'   => 'bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-900/50'
+            ];
+        } else {
+            return [
+                'emoji'   => '🐾',
+                'label'   => $especie ?: 'Mascota',
+                'classes' => 'bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200/90 dark:border-indigo-800/70 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 hover:border-indigo-300',
+                'badge'   => 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50'
+            ];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es" class="">

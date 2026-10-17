@@ -118,9 +118,11 @@ $edad_info = calcularEdadMascota($paciente['fecha_nacimiento']);
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm transition-colors">
             <!-- Cabecera de la tarjeta con especie, sexo y botón de editar -->
             <div class="flex items-center justify-between mb-4">
+                <?php $badge_paciente = getMascotaBadgeInfo($paciente['especie']); ?>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
-                        <?= htmlspecialchars($paciente['especie']) ?>
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg <?= $badge_paciente['badge'] ?>">
+                        <span class="text-sm select-none"><?= $badge_paciente['emoji'] ?></span>
+                        <span><?= htmlspecialchars($paciente['especie']) ?></span>
                     </span>
                     <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
                         <?= htmlspecialchars($paciente['sexo']) ?>
@@ -135,7 +137,7 @@ $edad_info = calcularEdadMascota($paciente['fecha_nacimiento']);
             </div>
 
             <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-1">
-                <?= htmlspecialchars($paciente['nombre']) ?>
+                <?= htmlspecialchars(ucfirst($paciente['nombre'])) ?>
             </h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
                 Raza: <strong class="text-slate-700 dark:text-slate-200"><?= htmlspecialchars($paciente['raza'] ?? 'No especificada') ?></strong>
@@ -250,9 +252,15 @@ $edad_info = calcularEdadMascota($paciente['fecha_nacimiento']);
                 <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
                     <span class="block text-xs font-semibold text-slate-400 uppercase mb-2">Otras mascotas de este dueño:</span>
                     <div class="flex flex-wrap gap-2">
-                        <?php foreach ($otras_mascotas as $otra): ?>
-                            <a href="paciente_perfil.php?id=<?= $otra['id'] ?>" class="inline-flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors border border-slate-200/60 dark:border-slate-700">
-                                🐾 <?= htmlspecialchars($otra['nombre']) ?> (<?= htmlspecialchars($otra['especie']) ?>)
+                        <?php foreach ($otras_mascotas as $otra): 
+                            $badge_otra = getMascotaBadgeInfo($otra['especie']);
+                        ?>
+                            <a href="paciente_perfil.php?id=<?= $otra['id'] ?>" 
+                               title="Ir al expediente clínico de <?= htmlspecialchars(ucfirst($otra['nombre'])) ?> (<?= htmlspecialchars($otra['especie']) ?>)" 
+                               class="inline-flex items-center gap-1.5 <?= $badge_otra['classes'] ?> px-2.5 py-1 rounded-full text-xs font-semibold shadow-2xs border transition-all hover:scale-105 hover:shadow-xs group/otra">
+                                <span class="text-sm leading-none select-none"><?= $badge_otra['emoji'] ?></span>
+                                <span class="font-bold tracking-tight"><?= htmlspecialchars(ucfirst($otra['nombre'])) ?></span>
+                                <span class="text-[10px] font-normal opacity-60 ml-0.5">• <?= htmlspecialchars($otra['especie']) ?></span>
                             </a>
                         <?php endforeach; ?>
                     </div>

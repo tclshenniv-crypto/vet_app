@@ -197,14 +197,16 @@ if (!function_exists('calcularEdadMascota')) {
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all">
                         <div class="flex items-start justify-between">
                             <div>
+                                <?php $b_esp = getMascotaBadgeInfo($m['especie']); ?>
                                 <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
-                                        <?= htmlspecialchars($m['especie']) ?>
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md <?= $b_esp['badge'] ?>">
+                                        <span class="text-xs select-none"><?= $b_esp['emoji'] ?></span>
+                                        <span><?= htmlspecialchars($m['especie']) ?></span>
                                     </span>
                                     <span class="text-xs text-slate-400 font-medium"><?= htmlspecialchars($m['sexo']) ?></span>
                                 </div>
                                 <h3 class="text-lg font-bold text-slate-900 dark:text-white">
-                                    <?= htmlspecialchars($m['nombre']) ?>
+                                    <?= htmlspecialchars(ucfirst($m['nombre'])) ?>
                                 </h3>
                                 <p class="text-xs text-slate-400">Raza: <?= htmlspecialchars($m['raza'] ?? 'No especificada') ?></p>
                             </div>
