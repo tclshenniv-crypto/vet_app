@@ -3,6 +3,7 @@ conexion.php
 .env
 .env.*
 *.log
+subir_a_github.bat
 
 # Respaldos de base de datos con información sensible
 *.sql
