@@ -103,14 +103,25 @@ $pacientes = $stmt->fetchAll();
                                 </td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($pacientes as $paciente): ?>
+                            <?php foreach ($pacientes as $paciente): 
+                                $badge_esp = getMascotaBadgeInfo($paciente['especie']);
+                            ?>
                                 <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
                                     <td class="py-4 px-6 font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
-                                        <?= htmlspecialchars($paciente['paciente_nombre']) ?>
+                                        <a href="paciente_perfil.php?id=<?= $paciente['paciente_id'] ?>" class="hover:underline">
+                                            <?= htmlspecialchars(ucfirst($paciente['paciente_nombre'])) ?>
+                                        </a>
                                     </td>
-                                    <td class="py-4 px-6 text-slate-600 dark:text-slate-300">
-                                        <span class="font-medium text-slate-800 dark:text-slate-200"><?= htmlspecialchars($paciente['especie']) ?></span> 
-                                        <span class="text-xs text-slate-400 block"><?= htmlspecialchars($paciente['raza'] ?? 'No especificada') ?></span>
+                                    <td class="py-4 px-6">
+                                        <div class="flex flex-col items-start gap-1">
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full <?= $badge_esp['badge'] ?>">
+                                                <span class="text-xs select-none"><?= $badge_esp['emoji'] ?></span>
+                                                <span><?= htmlspecialchars($paciente['especie']) ?></span>
+                                            </span>
+                                            <span class="text-xs text-slate-400 dark:text-slate-400 font-medium">
+                                                <?= htmlspecialchars(ucfirst($paciente['raza'] ?? 'No especificada')) ?>
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="py-4 px-6">
                                         <span class="font-semibold text-slate-800 dark:text-slate-200 block"><?= htmlspecialchars($paciente['cliente_nombre']) ?></span>
