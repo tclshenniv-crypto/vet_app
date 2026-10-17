@@ -33,6 +33,43 @@ if ($busqueda !== '') {
     $stmt = $pdo->query($sql);
 }
 $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+if (!function_exists('getMascotaBadgeInfo')) {
+    function getMascotaBadgeInfo($especie) {
+        $esp = mb_strtolower(trim($especie ?? ''));
+        if (strpos($esp, 'perro') !== false || strpos($esp, 'can') !== false || strpos($esp, 'dog') !== false) {
+            return [
+                'emoji'   => '🐶',
+                'label'   => 'Perro',
+                'classes' => 'bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200/90 dark:border-blue-800/70 hover:bg-blue-100 dark:hover:bg-blue-900/60 hover:border-blue-300'
+            ];
+        } elseif (strpos($esp, 'gato') !== false || strpos($esp, 'fel') !== false || strpos($esp, 'cat') !== false) {
+            return [
+                'emoji'   => '🐱',
+                'label'   => 'Gato',
+                'classes' => 'bg-emerald-50/90 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/90 dark:border-emerald-800/70 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 hover:border-emerald-300'
+            ];
+        } elseif (strpos($esp, 'ave') !== false || strpos($esp, 'pájaro') !== false || strpos($esp, 'pajaro') !== false || strpos($esp, 'loro') !== false) {
+            return [
+                'emoji'   => '🦜',
+                'label'   => 'Ave',
+                'classes' => 'bg-amber-50/90 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200/90 dark:border-amber-800/70 hover:bg-amber-100 dark:hover:bg-amber-900/60 hover:border-amber-300'
+            ];
+        } elseif (strpos($esp, 'conejo') !== false) {
+            return [
+                'emoji'   => '🐰',
+                'label'   => 'Conejo',
+                'classes' => 'bg-pink-50/90 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border-pink-200/90 dark:border-pink-800/70 hover:bg-pink-100 dark:hover:bg-pink-900/60 hover:border-pink-300'
+            ];
+        } else {
+            return [
+                'emoji'   => '🐾',
+                'label'   => $especie ?: 'Mascota',
+                'classes' => 'bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200/90 dark:border-indigo-800/70 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 hover:border-indigo-300'
+            ];
+        }
+    }
+}
 ?>
 
 <div class="space-y-6">
@@ -131,12 +168,10 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <?php else: ?>
                                         <span class="text-xs text-slate-400 italic">No registrada</span>
                                     <?php endif; ?>
-                                </td>
-
-                                <!-- Mascotas Asociadas -->
+                                                        <!-- Mascotas Asociadas -->
                                 <td class="py-4 px-6">
                                     <?php if ($cli['total_mascotas'] > 0 && !empty($cli['mascotas_data'])): ?>
-                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                        <div class="flex items-center gap-2 flex-wrap">
                                             <?php 
                                             $mascotas_array = explode('||', $cli['mascotas_data']);
                                             foreach ($mascotas_array as $m_item):
@@ -145,33 +180,46 @@ $clientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     $m_id = $m_parts[0];
                                                     $m_nombre = $m_parts[1];
                                                     $m_esp = $m_parts[2] ?? '';
+                                                    $badge = getMascotaBadgeInfo($m_esp);
                                             ?>
-                                                <a href="paciente_perfil.php?id=<?= $m_id ?>" class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 px-2 py-0.5 rounded-lg text-xs font-medium transition-colors border border-slate-200/60 dark:border-slate-700">
-                                                    🐾 <?= htmlspecialchars($m_nombre) ?>
+                                                <a href="paciente_perfil.php?id=<?= $m_id ?>" 
+                                                   title="Ver expediente clínico de <?= htmlspecialchars(ucfirst($m_nombre)) ?> (<?= htmlspecialchars($m_esp ?: $badge['label']) ?>)" 
+                                                   class="inline-flex items-center gap-1.5 <?= $badge['classes'] ?> px-2.5 py-1 rounded-full text-xs font-semibold shadow-2xs border transition-all hover:scale-105 hover:shadow-xs group/chip">
+                                                    <span class="text-sm leading-none select-none"><?= $badge['emoji'] ?></span>
+                                                    <span class="font-bold tracking-tight"><?= htmlspecialchars(ucfirst($m_nombre)) ?></span>
+                                                    <?php if (!empty($m_esp)): ?>
+                                                        <span class="text-[10px] font-normal opacity-60 ml-0.5">• <?= htmlspecialchars($m_esp) ?></span>
+                                                    <?php endif; ?>
                                                 </a>
                                             <?php 
                                                 endif;
                                             endforeach; 
                                             ?>
-                                            <span class="text-[11px] font-bold text-slate-400 bg-slate-50 dark:bg-slate-800/80 px-1.5 py-0.5 rounded">
-                                                (<?= $cli['total_mascotas'] ?>)
-                                            </span>
+                                            <?php if ($cli['total_mascotas'] > 1): ?>
+                                                <span class="text-[11px] font-bold text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 px-2 py-0.5 rounded-full select-none" title="<?= $cli['total_mascotas'] ?> mascotas registradas">
+                                                    <?= $cli['total_mascotas'] ?>
+                                                </span>
+                                            <?php endif; ?>
                                         </div>
                                     <?php else: ?>
-                                        <span class="text-xs text-slate-400 italic">Sin mascotas registradas</span>
+                                        <a href="agregar_mascota.php?cliente_id=<?= $cli['id'] ?>" class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 border border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 rounded-xl px-2.5 py-1 transition-all group/empty">
+                                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover/empty:text-blue-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                            <span>+ Registrar mascota</span>
+                                        </a>
                                     <?php endif; ?>
                                 </td>
 
                                 <!-- Acciones -->
                                 <td class="py-4 px-6 text-right whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-2">
-                                        <a href="cliente_perfil.php?id=<?= $cli['id'] ?>" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg transition-colors border border-blue-100 dark:border-blue-900/40">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <a href="cliente_perfil.php?id=<?= $cli['id'] ?>" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/40 px-2.5 py-1.5 rounded-lg transition-colors border border-blue-100 dark:border-blue-900/40">
                                             Ver Ficha
                                         </a>
-                                        <a href="agregar_mascota.php?cliente_id=<?= $cli['id'] ?>" title="Añadir mascota a este dueño" class="text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 p-1.5 rounded-lg transition-colors">
-                                            +🐾
+                                        <a href="agregar_mascota.php?cliente_id=<?= $cli['id'] ?>" title="Añadir nueva mascota a este propietario" class="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-2 py-1.5 rounded-lg transition-colors border border-emerald-100 dark:border-emerald-900/40">
+                                            <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                            <span class="text-[11px] font-semibold">Mascota</span>
                                         </a>
-                                        <a href="editar_cliente.php?id=<?= $cli['id'] ?>" title="Editar datos del propietario" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 transition-colors">
+                                        <a href="editar_cliente.php?id=<?= $cli['id'] ?>" title="Editar datos del propietario" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         </a>
                                     </div>
