@@ -25,7 +25,7 @@ Sistema web para la administración de historias clínicas, consultas, pacientes
    Coloca los archivos en tu carpeta de servidor local (por ejemplo en `c:/xampp/htdocs/vet_app` para XAMPP).
 
 3. **Configuración de Base de Datos**:
-   - Crea una base de datos MySQL (por ejemplo `vet_clinica`).
+   - Crea una base de datos MySQL llamada `vet_clinica` (o impórtala desde phpMyAdmin usando el archivo `database_schema.sql` incluido en el proyecto).
    - Copia el archivo `conexion.example.php` y renómbralo a `conexion.php`:
      ```bash
      cp conexion.example.php conexion.php

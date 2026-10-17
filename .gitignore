@@ -11,6 +11,7 @@ uploads/examenes/*
 
 # Respaldos de base de datos con información sensible
 *.sql
+!database_schema.sql
 *.sqlite
 *.dump
 
